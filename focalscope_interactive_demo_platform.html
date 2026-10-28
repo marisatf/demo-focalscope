@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocalScope Omnichannel Platform - Demo Edition</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        focal: {
+                            blue: '#0e71ce',
+                            darkBlue: '#005bb5',
+                            lightBg: '#f3f4f6',
+                            border: '#d1d5db',
+                            selectedBg: '#e0f2fe',
+                            aiGreen: '#a3e635',
+                            aiGreenDark: '#3f6212',
+                            prioritario: '#f59e0b',
+                            otros: '#84cc16'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-size: 11px;
+            user-select: none;
+        }
+        /* Strict custom scrollbars matching desktop app feel */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .tree-item:hover {
+            background-color: #e2e8f0;
+        }
+        .tree-item.active {
+            background-color: #cbd5e1;
+            font-weight: 600;
+        }
+        .ticket-row:hover {
+            background-color: #f1f5f9;
+        }
+        .ticket-row.selected {
+            background-color: #e0f2fe;
+            border-left: 3px solid #0e71ce;
+        }
+        /* Badge styling */
+        .badge-ai {
+            background-color: #a3e635;
+            color: #1a4301;
+            font-weight: 700;
+            font-size: 9px;
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+        .badge-prio {
+            background-color: #f59e0b;
+            color: #451a03;
+            font-weight: 700;
+            font-size: 9px;
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+        .badge-mody {
+            background-color: #84cc16;
+            color: #1a4301;
+            font-weight: 700;
+            font-size: 9px;
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+        .badge-blue {
+            background-color: #3b82f6;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 9px;
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans h-screen w-screen flex flex-col overflow-hidden">
+
+    <!-- 1. TOP MAIN HEADER BAR (#0e71ce) -->
+    <header class="bg-[#0e71ce] text-white h-10 px-2 flex items-center justify-between shrink-0 shadow-sm">
+        <!-- Left Channel Icons & Counter Badges -->
+        <div class="flex items-center space-x-1.5">
+            <!-- Folder Home Icon -->
+            <button class="w-6 h-6 rounded-full bg-blue-600/60 hover:bg-blue-700 flex items-center justify-center relative" title="Folder Home">
+                <i class="fa-solid fa-folder text-white text-xs"></i>
+                <span class="absolute -top-1 -right-1 bg-emerald-500 text-white text-[8px] font-bold px-1 rounded-full border border-blue-800">0</span>
+            </button>
+            <!-- Chat Icon -->
+            <button class="w-6 h-6 rounded-full bg-blue-600/60 hover:bg-blue-700 flex items-center justify-center relative" title="Live Chats">
+                <i class="fa-solid fa-comment-dots text-white text-xs"></i>
+                <span class="absolute -top-1 -right-1 bg-emerald-500 text-white text-[8px] font-bold px-1 rounded-full border border-blue-800">0</span>
+            </button>
+            <!-- WhatsApp Icon -->
+            <button class="w-6 h-6 rounded-full bg-blue-600/60 hover:bg-blue-700 flex items-center justify-center relative" title="WhatsApp Messaging">
+                <i class="fa-brands fa-whatsapp text-white text-xs"></i>
+                <span class="absolute -top-1 -right-1 bg-emerald-500 text-white text-[8px] font-bold px-1 rounded-full border border-blue-800">0</span>
+            </button>
+            <!-- Link/Integration Icon -->
+            <button class="w-6 h-6 rounded-full bg-blue-600/60 hover:bg-blue-700 flex items-center justify-center relative" title="Omnichannel Links">
+                <i class="fa-solid fa-link text-white text-xs"></i>
+                <span class="absolute -top-1 -right-1 bg-emerald-500 text-white text-[8px] font-bold px-1 rounded-full border border-blue-800">0</span>
+            </button>
+            <!-- Bell Icon -->
+            <button class="w-6 h-6 rounded-full bg-blue-600/60 hover:bg-blue-700 flex items-center justify-center relative" title="Notifications">
+                <i class="fa-regular fa-bell text-white text-xs"></i>
+                <span class="absolute -top-1 -right-1 bg-emerald-500 text-white text-[8px] font-bold px-1 rounded-full border border-blue-800">0</span>
+            </button>
+            <!-- Telephony Icon -->
+            <button onclick="openCallRecordingModal()" class="w-6 h-6 rounded-full bg-blue-600/60 hover:bg-blue-700 flex items-center justify-center relative" title="Telephony Calls (RF-05/06)">
+                <i class="fa-solid fa-phone text-white text-xs"></i>
+                <span class="absolute -top-1 -right-1 bg-emerald-500 text-white text-[8px] font-bold px-1 rounded-full border border-blue-800">0</span>
+            </button>
+        </div>
+
+        <!-- Right Quick Search & User Status -->
+        <div class="flex items-center space-x-2">
+            <!-- EMAIL SEARCH Button -->
+            <button class="bg-white text-[#0e71ce] font-semibold px-2 py-0.5 rounded text-[11px] flex items-center space-x-1 shadow-sm hover:bg-blue-50">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>EMAIL SEARCH</span>
+            </button>
+
+            <!-- Search Field -->
+            <div class="relative w-48 sm:w-64">
+                <input type="text" id="quickFindInput" onkeyup="filterGlobalSearch()" placeholder="Quick find email" class="w-full pl-2 pr-6 py-0.5 text-xs rounded text-slate-800 outline-none shadow-inner border border-blue-400">
+                <i class="fa-solid fa-magnifying-glass absolute right-2 top-1.5 text-slate-400 text-[10px]"></i>
+            </div>
+
+            <!-- Admin User Badge -->
+            <div class="flex items-center space-x-1.5 pl-2 border-l border-blue-400/50">
+                <div class="w-5 h-5 bg-blue-800 text-white rounded-full flex items-center justify-center font-bold text-[10px] border border-blue-300">
+                    A
+                </div>
+                <span class="font-bold text-xs uppercase tracking-wide">ADMIN1</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. SECONDARY ACTION TOOLBAR (Gris claro) -->
+    <div class="bg-slate-200 border-b border-slate-300 px-2 py-1 flex items-center justify-between shrink-0">
+        <!-- Left Action Buttons -->
+        <div class="flex items-center space-x-1 flex-wrap">
+            <button class="bg-slate-100 hover:bg-white border border-slate-300 rounded px-2 py-0.5 flex items-center space-x-1 text-slate-700 font-medium">
+                <i class="fa-regular fa-folder text-slate-500"></i>
+            </button>
+
+            <button onclick="openComposerModal('NEW EMAIL')" class="bg-slate-100 hover:bg-white border border-slate-300 rounded px-2 py-0.5 flex items-center space-x-1 text-slate-700 font-semibold shadow-sm">
+                <i class="fa-regular fa-envelope text-slate-600"></i>
+                <span>NEW EMAIL</span>
+                <i class="fa-solid fa-caret-down text-[9px] text-slate-500"></i>
+            </button>
+
+            <button onclick="closeCurrentTicket()" class="bg-slate-100 hover:bg-white border border-slate-300 rounded px-2 py-0.5 flex items-center space-x-1 text-slate-500 font-medium">
+                <i class="fa-regular fa-circle-check text-emerald-600"></i>
+                <span>CLOSE TICKET</span>
+                <i class="fa-solid fa-caret-down text-[9px] text-slate-400"></i>
+            </button>
+
+            <button onclick="assignToMe()" class="bg-slate-100 hover:bg-white border border-slate-300 rounded px-2 py-0.5 flex items-center space-x-1 text-slate-500 font-medium">
+                <i class="fa-regular fa-user text-slate-500"></i>
+                <span>ASSIGN TO ME</span>
+                <i class="fa-solid fa-caret-down text-[9px] text-slate-400"></i>
+            </button>
+
+            <button onclick="openComposerModal('REPLY')" class="bg-slate-100 hover:bg-white border border-slate-300 rounded px-2 py-0.5 flex items-center space-x-1 text-slate-500 font-medium">
+                <i class="fa-solid fa-reply text-slate-500"></i>
+                <span>REPLY</span>
+                <i class="fa-solid fa-caret-down text-[9px] text-slate-400"></i>
+            </button>
+
+            <button class="bg-slate-100 hover:bg-white border border-slate-300 rounded px-2 py-0.5 flex items-center space-x-1 text-slate-500 font-medium">
+                <i class="fa-solid fa-box-archive text-slate-500"></i>
+                <span>STASH</span>
+            </button>
+
+            <button class="bg-slate-100 hover:bg-white border border-slate-300 rounded px-1.5 py-0.5 text-slate-600">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+        </div>
+
+        <!-- Right Layout Toggle Controls -->
+        <div class="flex items-center space-x-1">
+            <button title="List View" class="p-1 hover:bg-slate-300 rounded text-slate-600">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <button title="Split Vertical View" class="p-1 bg-slate-300 rounded text-slate-800">
+                <i class="fa-solid fa-table-columns"></i>
+            </button>
+            <button title="Split Horizontal View" class="p-1 hover:bg-slate-300 rounded text-slate-600">
+                <i class="fa-solid fa-grip-lines"></i>
+            </button>
+            <button title="Settings" class="p-1 hover:bg-slate-300 rounded text-slate-600">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 3. MAIN WORKSPACE 3-COLUMN FLEX LAYOUT -->
+    <div class="flex-1 flex overflow-hidden">
+
+        <!-- COLUMN 1: LEFT NAVIGATION TREE SIDEBAR (220px) -->
+        <aside class="w-56 bg-slate-50 border-r border-slate-300 flex flex-col shrink-0 overflow-y-auto">
+            <!-- Home Header -->
+            <div onclick="selectFolder('Home', 'HOME')" class="tree-item px-2 py-1.5 flex items-center space-x-1.5 text-slate-700 cursor-pointer border-b border-slate-200">
+                <i class="fa-solid fa-house text-slate-500 text-xs"></i>
+                <span class="font-semibold">Home</span>
+            </div>
+
+            <!-- Shared Items Tree -->
+            <div class="p-1">
+                <div class="flex items-center justify-between text-slate-600 font-bold py-1 px-1 cursor-pointer">
+                    <span class="flex items-center space-x-1">
+                        <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+                        <span>Shared Items</span>
+                    </span>
+                    <i class="fa-solid fa-angle-up text-[10px] text-slate-400"></i>
+                </div>
+
+                <!-- Ticketboxes Branch -->
+                <div class="pl-2 space-y-0.5">
+                    <div class="flex items-center space-x-1 text-slate-600 py-0.5 font-semibold">
+                        <i class="fa-solid fa-minus text-[9px] text-slate-400"></i>
+                        <i class="fa-regular fa-folder-open text-amber-500"></i>
+                        <span>Ticketboxes</span>
+                    </div>
+
+                    <!-- Subfolders List -->
+                    <div class="pl-4 space-y-0.5 text-[11px]">
+                        <div onclick="selectFolder('000 Notas compartid', '000')" class="tree-item px-1.5 py-0.5 rounded cursor-pointer flex items-center space-x-1.5 text-slate-700">
+                            <i class="fa-regular fa-folder text-amber-500"></i>
+                            <span class="truncate">000 Notas compartid</span>
+                        </div>
+
+                        <div onclick="selectFolder('060 Varios', '060')" class="tree-item px-1.5 py-0.5 rounded cursor-pointer flex items-center space-x-1.5 text-slate-700">
+                            <i class="fa-regular fa-folder text-amber-500"></i>
+                            <span class="truncate">060 Varios</span>
+                        </div>
+
+                        <div onclick="selectFolder('070 Internos', '070')" class="tree-item px-1.5 py-0.5 rounded cursor-pointer flex items-center space-x-1.5 text-slate-700">
+                            <i class="fa-solid fa-plus text-[9px] text-slate-400"></i>
+                            <i class="fa-regular fa-envelope text-slate-500"></i>
+                            <span class="truncate">070 Internos</span>
+                        </div>
+
+                        <div onclick="selectFolder('080 - Bookings', '080')" class="tree-item px-1.5 py-0.5 rounded cursor-pointer flex items-center justify-between text-slate-700">
+                            <span class="flex items-center space-x-1.5 truncate">
+                                <i class="fa-solid fa-plus text-[9px] text-slate-400"></i>
+                                <i class="fa-regular fa-envelope text-slate-500"></i>
+                                <span class="font-bold">080 - Bookings</span>
+                            </span>
+                            <span class="text-blue-600 font-bold text-[10px]">1/0</span>
+                        </div>
+
+                        <div onclick="selectFolder('090 - ALL Emails Tea', '090')" class="tree-item px-1.5 py-0.5 rounded cursor-pointer flex items-center space-x-1.5 text-slate-700">
+                            <i class="fa-solid fa-plus text-[9px] text-slate-400"></i>
+                            <i class="fa-regular fa-envelope text-slate-500"></i>
+                            <span class="truncate">090 - ALL Emails Tea</span>
+                        </div>
+
+                        <!-- 100 COBRA (Expanded) -->
+                        <div onclick="selectFolder('100 COBRA', '100')" id="folder-100" class="tree-item active px-1.5 py-0.5 rounded cursor-pointer flex items-center justify-between text-slate-800">
+                            <span class="flex items-center space-x-1.5 truncate">
+                                <i class="fa-solid fa-minus text-[9px] text-slate-600"></i>
+                                <i class="fa-regular fa-folder-open text-blue-600"></i>
+                                <span class="font-bold">100 COBRA</span>
+                            </span>
+                            <span class="text-blue-700 font-bold text-[10px]">5/0</span>
+                        </div>
+
+                        <!-- 100 COBRA Sub-items -->
+                        <div class="pl-4 space-y-0.5 border-l border-slate-300 ml-2">
+                            <div onclick="selectFolder('100 Sent COBRA', '100')" class="tree-item px-1 py-0.5 rounded cursor-pointer flex items-center space-x-1 text-slate-600">
+                                <i class="fa-solid fa-magnifying-glass text-[9px] text-slate-400"></i>
+                                <span class="truncate">100 Sent COBRA</span>
+                            </div>
+                            <div onclick="selectFolder('100 SLA COBRA', '100')" class="tree-item px-1 py-0.5 rounded cursor-pointer flex items-center space-x-1 text-slate-600">
+                                <i class="fa-regular fa-clock text-[9px] text-slate-400"></i>
+                                <span class="truncate">100 SLA COBRA (4</span>
+                            </div>
+                            <div onclick="selectFolder('101 COBRA Telepho', '100')" class="tree-item px-1 py-0.5 rounded cursor-pointer flex items-center space-x-1 text-slate-600">
+                                <i class="fa-regular fa-envelope text-[9px] text-slate-400"></i>
+                                <span class="truncate">101 COBRA Telepho</span>
+                            </div>
+                            <div onclick="selectFolder('102 Offers', '100')" class="tree-item px-1 py-0.5 rounded cursor-pointer flex items-center space-x-1 text-slate-600">
+                                <i class="fa-regular fa-envelope text-[9px] text-slate-400"></i>
+                                <span class="truncate">102 Offers</span>
+                            </div>
+                            <div onclick="selectFolder('103 Emergencias', '100')" class="tree-item px-1 py-0.5 rounded cursor-pointer flex items-center space-x-1 text-slate-600">
+                                <i class="fa-regular fa-envelope text-[9px] text-slate-400"></i>
+                                <span class="truncate">103 Emergencias</span>
+                            </div>
+                            <div onclick="selectFolder('104 Llamadas perdi', '100')" class="tree-item px-1 py-0.5 rounded cursor-pointer flex items-center space-x-1 text-slate-600">
+                                <i class="fa-regular fa-envelope text-[9px] text-slate-400"></i>
+                                <span class="truncate">104 Llamadas perdi</span>
+                            </div>
+                        </div>
+
+                        <!-- Other Groups -->
+                        <div onclick="selectFolder('1000 GRUPO SAETA', '1000')" class="tree-item px-1.5 py-0.5 rounded cursor-pointer flex items-center space-x-1.5 text-slate-700">
+                            <i class="fa-solid fa-plus text-[9px] text-slate-400"></i>
+                            <i class="fa-regular fa-folder text-amber-500"></i>
+                            <span class="truncate">1000 GRUPO SAETA</span>
+                        </div>
+
+                        <div onclick="selectFolder('1010 SOLCLEF', '1010')" class="tree-item px-1.5 py-0.5 rounded cursor-pointer flex items-center space-x-1.5 text-slate-700">
+                            <i class="fa-solid fa-plus text-[9px] text-slate-400"></i>
+                            <i class="fa-regular fa-folder text-amber-500"></i>
+                            <span class="truncate">1010 SOLCLEF</span>
+                        </div>
+
+                        <div onclick="selectFolder('1020 Grupo Tendam', '1020')" class="tree-item px-1.5 py-0.5 rounded cursor-pointer flex items-center space-x-1.5 text-slate-700">
+                            <i class="fa-solid fa-plus text-[9px] text-slate-400"></i>
+                            <i class="fa-regular fa-folder text-amber-500"></i>
+                            <span class="truncate">1020 Grupo Tendam</span>
+                        </div>
+
+                        <div onclick="selectFolder('1030 VIP Grupo Tend', '1030')" class="tree-item px-1.5 py-0.5 rounded cursor-pointer flex items-center space-x-1.5 text-slate-700">
+                            <i class="fa-solid fa-plus text-[9px] text-slate-400"></i>
+                            <i class="fa-regular fa-folder text-amber-500"></i>
+                            <span class="truncate">1030 VIP Grupo Tend</span>
+                        </div>
+
+                        <div onclick="selectFolder('200 FECYT', '200')" class="tree-item px-1.5 py-0.5 rounded cursor-pointer flex items-center justify-between text-slate-700">
+                            <span class="flex items-center space-x-1.5 truncate">
+                                <i class="fa-solid fa-plus text-[9px] text-slate-400"></i>
+                                <i class="fa-regular fa-folder text-amber-500"></i>
+                                <span class="font-bold">200 FECYT</span>
+                            </span>
+                            <span class="text-blue-700 font-bold text-[10px]">3/0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- COLUMN 2: MIDDLE TICKET LIST TABLE PANE -->
+        <section class="w-[520px] lg:w-[580px] bg-white border-r border-slate-300 flex flex-col shrink-0 overflow-hidden">
+            
+            <!-- Filters Bar (OPEN / ON HOLD / CLOSED / ALL) -->
+            <div class="bg-slate-100 border-b border-slate-300 px-2 py-1 flex items-center justify-between shrink-0">
+                <div class="flex items-center space-x-1 font-bold text-slate-600">
+                    <button onclick="filterStatus('OPEN')" id="btn-open" class="px-2 py-0.5 bg-white border border-slate-300 rounded text-slate-800 shadow-sm flex items-center space-x-1">
+                        <i class="fa-regular fa-circle text-blue-600 text-[10px]"></i>
+                        <span>OPEN</span>
+                    </button>
+                    <button onclick="filterStatus('ON HOLD')" id="btn-onhold" class="px-2 py-0.5 hover:bg-slate-200 rounded text-slate-600 flex items-center space-x-1">
+                        <i class="fa-regular fa-clock text-amber-600 text-[10px]"></i>
+                        <span>ON HOLD</span>
+                    </button>
+                    <button onclick="filterStatus('CLOSED')" id="btn-closed" class="px-2 py-0.5 hover:bg-slate-200 rounded text-slate-600 flex items-center space-x-1">
+                        <i class="fa-regular fa-circle-check text-emerald-600 text-[10px]"></i>
+                        <span>CLOSED</span>
+                    </button>
+                    <button onclick="filterStatus('ALL')" id="btn-all" class="px-2 py-0.5 hover:bg-slate-200 rounded text-slate-700 flex items-center space-x-1 border border-slate-300 bg-slate-200">
+                        <i class="fa-regular fa-folder text-slate-600 text-[10px]"></i>
+                        <span>ALL</span>
+                        <i class="fa-solid fa-chevron-down text-[8px]"></i>
+                    </button>
+                </div>
+
+                <div class="flex items-center space-x-2 text-slate-600 font-semibold">
+                    <button class="flex items-center space-x-1 text-slate-700">
+                        <i class="fa-solid fa-pin text-slate-400"></i>
+                        <span>FOCUSED</span>
+                        <i class="fa-solid fa-chevron-down text-[8px]"></i>
+                    </button>
+                    <button title="Refresh List" onclick="refreshList()">
+                        <i class="fa-solid fa-rotate-right text-slate-500 hover:text-slate-800"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- In-Folder Quick Search Input -->
+            <div class="p-1.5 bg-slate-50 border-b border-slate-200 flex items-center space-x-2 shrink-0">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-2 top-2 text-slate-400 text-xs"></i>
+                    <input type="text" id="folderSearchInput" onkeyup="filterFolderSearch()" placeholder="Search in folder, press Down key for advanced options" class="w-full pl-7 pr-3 py-1 bg-white border border-slate-300 rounded text-xs outline-none focus:border-blue-500">
+                </div>
+                <button class="p-1 text-slate-500 hover:bg-slate-200 rounded" title="Filter columns">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+            </div>
+
+            <!-- Table Header Columns -->
+            <div class="bg-slate-100 border-b border-slate-300 text-slate-600 font-semibold px-2 py-1 flex items-center text-[10px] tracking-tight shrink-0">
+                <div class="w-10 text-center">Ticket</div>
+                <div class="w-28 truncate">From</div>
+                <div class="flex-1 truncate">Subject</div>
+                <div class="w-8 text-center">Se...</div>
+                <div class="w-8 text-center">To</div>
+                <div class="w-12 text-right">Date</div>
+            </div>
+
+            <!-- Scrollable Ticket List -->
+            <div id="ticketTableBody" class="flex-1 overflow-y-auto divide-y divide-slate-100">
+                <!-- Javascript renders Spanish cases here -->
+            </div>
+
+            <!-- Footer Stats -->
+            <div class="p-1 bg-slate-100 border-t border-slate-200 text-slate-500 text-[10px] flex items-center justify-between shrink-0 px-2">
+                <span id="folderTitleLabel">Folder: <b>100 COBRA</b></span>
+                <span id="ticketCountLabel">Showing 13 tickets</span>
+            </div>
+        </section>
+
+        <!-- COLUMN 3: RIGHT PANEL - 360° CUSTOMER & TICKET DETAIL VIEW -->
+        <main id="rightDetailPanel" class="flex-1 bg-white flex flex-col overflow-hidden relative">
+            
+            <!-- Default "No List Item Selected" State -->
+            <div id="noSelectionView" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center bg-white">
+                <p class="text-slate-500 text-xs mb-3 font-medium">No list item selected</p>
+                <button onclick="openComposerModal('NEW EMAIL')" class="bg-[#0e71ce] hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow-md text-xs">
+                    New email
+                </button>
+            </div>
+
+            <!-- Active Selected Ticket View -->
+            <div id="activeTicketView" class="flex-1 flex flex-col overflow-hidden">
+                
+                <!-- Ticket Top Channel Bar -->
+                <div class="bg-slate-50 border-b border-slate-200 px-3 py-1.5 flex items-center justify-between shrink-0">
+                    <div class="flex items-center space-x-2 text-slate-600">
+                        <span class="font-semibold text-xs">Channel</span>
+                        <span id="detailChannelAddress" class="text-slate-800 font-bold bg-slate-200 px-2 py-0.5 rounded border border-slate-300">
+                            amelia.garcia.paypal@sladesk.dk
+                        </span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px] border border-emerald-300">
+                            ● SLA Active
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Customer 360° Profile Header (RF-01, RF-02, RF-03) -->
+                <div class="bg-white p-3 border-b border-slate-200 flex items-start justify-between shrink-0">
+                    <div class="flex space-x-3 items-center">
+                        <img id="detailAvatar" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80" alt="Avatar" class="w-14 h-14 rounded-full object-cover border-2 border-blue-500 shadow-sm">
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <h2 id="detailFullName" class="text-sm font-bold text-slate-900">Amelia Garcia</h2>
+                                <span id="detailVipBadge" class="bg-purple-100 text-purple-900 text-[9px] font-bold px-1.5 py-0.2 rounded border border-purple-300">VIP CLIENT</span>
+                            </div>
+                            <div class="text-xs text-slate-500 mt-0.5">
+                                Full name: <span id="detailFullNameSub" class="text-slate-800 font-medium">Amelia Garcia</span>
+                            </div>
+                            <div class="flex items-center space-x-4 text-xs mt-1">
+                                <div><span class="text-slate-400">Company:</span> <span id="detailCompany" class="font-bold text-slate-700">PayPal</span></div>
+                                <div><span class="text-slate-400">Position:</span> <span id="detailPosition" class="font-medium text-slate-700">Sales Director</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Internal Notes Card (RF-14) -->
+                    <div class="w-72 bg-amber-50/80 border border-amber-200 rounded p-2 text-xs">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-bold text-amber-900 text-[10px] uppercase tracking-wider flex items-center space-x-1">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                <span>Notes</span>
+                            </span>
+                            <button onclick="saveNotes()" class="text-[9px] bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold px-1.5 py-0.5 rounded">Save</button>
+                        </div>
+                        <input type="text" id="detailNotesInput" value="Cliente VIP. Agente principal: Anna K." class="w-full bg-white border border-amber-300 rounded px-2 py-1 text-xs text-slate-800 outline-none focus:border-amber-500">
+                    </div>
+                </div>
+
+                <!-- Multi-Channel Tabs Bar (RF-01, RF-08, RF-09, RF-10) -->
+                <div class="bg-slate-100 border-b border-slate-300 flex items-center justify-between px-3 shrink-0">
+                    <div class="flex space-x-1">
+                        <button onclick="switchChannel('email')" id="tab-btn-email" class="px-3 py-1.5 font-bold text-xs border-b-2 border-[#0e71ce] text-[#0e71ce] bg-white flex items-center space-x-1">
+                            <span>CORREO ELECTRÓNICO</span>
+                        </button>
+                        <button onclick="switchChannel('whatsapp')" id="tab-btn-whatsapp" class="px-3 py-1.5 font-medium text-xs text-slate-600 hover:text-slate-900 flex items-center space-x-1">
+                            <span>WHATSAPP</span>
+                            <span class="bg-emerald-500 text-white rounded-full text-[9px] px-1 font-bold">1</span>
+                        </button>
+                        <button onclick="switchChannel('chat')" id="tab-btn-chat" class="px-3 py-1.5 font-medium text-xs text-slate-600 hover:text-slate-900 flex items-center space-x-1">
+                            <span>CHAT EN VIVO</span>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-2 text-[10px] text-slate-500">
+                        <label class="flex items-center space-x-1 cursor-pointer">
+                            <input type="checkbox" checked class="rounded border-slate-300 text-blue-600">
+                            <span>Filter history log</span>
+                        </label>
+                        <label class="flex items-center space-x-1 cursor-pointer">
+                            <input type="checkbox" class="rounded border-slate-300 text-blue-600">
+                            <span>domain</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Interaction History Content Area -->
+                <div id="interactionHistoryLog" class="flex-1 p-3 overflow-y-auto space-y-3 bg-slate-50/60">
+                    <!-- Dynamic timeline logs injected via JS -->
+                </div>
+
+                <!-- Inline Quick Reply Box -->
+                <div class="p-2 border-t border-slate-300 bg-white shrink-0">
+                    <div class="flex items-center justify-between mb-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-bold text-xs text-slate-700">Quick Reply:</span>
+                            <button onclick="useAiAssistInReply()" class="bg-purple-100 hover:bg-purple-200 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded border border-purple-300 flex items-center space-x-1">
+                                <i class="fa-solid fa-wand-magic-sparkles text-purple-600"></i>
+                                <span>AI Assist Response (RF-25)</span>
+                            </button>
+                        </div>
+                        <div class="text-[10px] text-slate-400">Press Ctrl+Enter to Send</div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <textarea id="inlineReplyText" rows="2" placeholder="Escriba su respuesta o use la asistencia de IA..." class="flex-1 p-2 border border-slate-300 rounded text-xs outline-none focus:border-blue-500 resize-none"></textarea>
+                        <button onclick="sendInlineReply()" class="bg-[#0e71ce] hover:bg-blue-700 text-white font-bold px-4 rounded flex flex-col items-center justify-center shadow-sm">
+                            <i class="fa-solid fa-paper-plane text-xs mb-0.5"></i>
+                            <span class="text-[10px]">SEND</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL: WYSIWYG EMAIL COMPOSER & REPLY (RF-08, RF-13, RF-25) -->
+    <div id="composerModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-3xl rounded-lg shadow-2xl overflow-hidden border border-slate-400 flex flex-col h-[520px]">
+            <!-- Composer Header -->
+            <div class="bg-[#0e71ce] text-white px-3 py-2 flex items-center justify-between shrink-0">
+                <div class="flex items-center space-x-2 font-bold text-xs">
+                    <i class="fa-regular fa-envelope"></i>
+                    <span id="composerTitle">NEW EMAIL - FocalScope Omnichannel</span>
+                </div>
+                <button onclick="closeComposerModal()" class="text-white hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Composer Form Header Inputs -->
+            <div class="p-3 bg-slate-50 border-b border-slate-200 space-y-2 text-xs shrink-0">
+                <div class="flex items-center space-x-2">
+                    <span class="w-16 font-bold text-slate-600 text-right">To:</span>
+                    <input type="text" id="composerTo" value="amelia.garcia.paypal@sladesk.dk" class="flex-1 p-1 bg-white border border-slate-300 rounded outline-none focus:border-blue-500">
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="w-16 font-bold text-slate-600 text-right">Subject:</span>
+                    <input type="text" id="composerSubject" value="RE: Modificación de nombre en billete de avión" class="flex-1 p-1 bg-white border border-slate-300 rounded outline-none focus:border-blue-500 font-semibold">
+                </div>
+                <div class="flex items-center justify-between pt-1">
+                    <div class="flex items-center space-x-2">
+                        <!-- Predefined Responses Dropdown (RF-13) -->
+                        <select id="predefinedTemplateSelect" onchange="applyPredefinedTemplate(this.value)" class="p-1 bg-white border border-slate-300 rounded text-xs text-slate-700 outline-none cursor-pointer">
+                            <option value="">⚡ Plantilla Predefinida (RF-13)...</option>
+                            <option value="conf_vuelo">Confirmación Cambio de Billete de Avión</option>
+                            <option value="hotel_almeria">Confirmación Reserva Hotel Almería</option>
+                            <option value="incidencia_ave">Notificación Incidencia Tren AVE/IRYO</option>
+                            <option value="presupuesto">Envío de Presupuesto Corporativo</option>
+                        </select>
+
+                        <!-- AI Suggestion Button (RF-25) -->
+                        <button onclick="generateAiDraft()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-2.5 py-1 rounded shadow-sm text-xs flex items-center space-x-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Sugerir con IA (RF-25)</span>
+                        </button>
+                    </div>
+
+                    <div class="text-slate-400 text-[10px]">HTML Rich Text Mode</div>
+                </div>
+            </div>
+
+            <!-- Composer Body -->
+            <div class="flex-1 p-3 bg-white flex flex-col">
+                <textarea id="composerBody" class="w-full flex-1 p-2 border border-slate-300 rounded text-xs outline-none focus:border-blue-500 font-sans resize-none" placeholder="Escriba su mensaje aquí..."></textarea>
+            </div>
+
+            <!-- Composer Footer -->
+            <div class="bg-slate-100 px-3 py-2 border-t border-slate-300 flex items-center justify-between shrink-0">
+                <div class="flex items-center space-x-2 text-slate-500 text-xs">
+                    <button class="p-1 hover:bg-slate-200 rounded" title="Attach File"><i class="fa-solid fa-paperclip"></i></button>
+                    <button class="p-1 hover:bg-slate-200 rounded" title="Insert Signature"><i class="fa-solid fa-signature"></i></button>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="closeComposerModal()" class="px-3 py-1 bg-slate-200 text-slate-700 rounded font-semibold text-xs hover:bg-slate-300">Cancelar</button>
+                    <button onclick="sendComposerMessage()" class="px-4 py-1 bg-[#0e71ce] hover:bg-blue-700 text-white font-bold rounded text-xs shadow">Enviar Respuesta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CALL RECORDING & TELEPHONY PLAYER (RF-05, RF-06) -->
+    <div id="callRecordingModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-lg shadow-2xl overflow-hidden border border-slate-300">
+            <div class="bg-emerald-700 text-white px-3 py-2 flex items-center justify-between">
+                <div class="flex items-center space-x-2 font-bold text-xs">
+                    <i class="fa-solid fa-phone-volume"></i>
+                    <span>Telephony & Call Recording (RF-05, RF-06)</span>
+                </div>
+                <button onclick="closeCallRecordingModal()" class="text-white hover:text-slate-200">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-4 space-y-3">
+                <div class="flex items-center space-x-3 bg-emerald-50 p-2.5 rounded border border-emerald-200">
+                    <div class="w-10 h-10 bg-emerald-600 text-white rounded-full flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-slate-900 text-xs">Llamada Entrante Grabada</div>
+                        <div class="text-[10px] text-slate-500">Cliente: Epifanio Moreno (+34 91 445 2211)</div>
+                        <div class="text-[10px] text-emerald-700 font-semibold">Caso: ACCIDENTE DE TREN AVE/IRYO</div>
+                    </div>
+                </div>
+
+                <!-- Simulated Audio Wave Player -->
+                <div class="bg-slate-900 text-emerald-400 p-3 rounded-lg flex items-center justify-between shadow-inner">
+                    <button id="audioPlayBtn" onclick="toggleAudio()" class="w-8 h-8 bg-emerald-500 text-slate-900 rounded-full flex items-center justify-center font-bold hover:bg-emerald-400">
+                        <i id="audioPlayIcon" class="fa-solid fa-play"></i>
+                    </button>
+                    <div class="flex-1 mx-3 flex items-center space-x-1 h-5">
+                        <span class="w-1 bg-emerald-500 h-3 animate-pulse"></span>
+                        <span class="w-1 bg-emerald-500 h-5 animate-pulse"></span>
+                        <span class="w-1 bg-emerald-500 h-2 animate-pulse"></span>
+                        <span class="w-1 bg-emerald-500 h-6 animate-pulse"></span>
+                        <span class="w-1 bg-emerald-500 h-4 animate-pulse"></span>
+                        <span class="w-1 bg-emerald-500 h-3 animate-pulse"></span>
+                        <span class="w-1 bg-emerald-500 h-5 animate-pulse"></span>
+                    </div>
+                    <span class="text-[11px] font-mono text-emerald-300">00:48 / 02:15</span>
+                </div>
+
+                <div class="bg-slate-50 p-2 rounded border border-slate-200 text-xs">
+                    <div class="font-bold text-slate-700 text-[10px] mb-1">TRANSCRIPCIÓN AUTOMÁTICA (VOICE-TO-TEXT AI):</div>
+                    <p class="italic text-slate-600 text-[11px]">"...hola, llamaba para comunicar la incidencia con el billete de tren del AVE afectado por el retraso..."</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-100 px-3 py-2 border-t border-slate-200 text-right">
+                <button onclick="closeCallRecordingModal()" class="px-3 py-1 bg-slate-600 text-white rounded font-semibold text-xs hover:bg-slate-700">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        // SPANISH CORPORATE MOCK DATA - Exact match to screenshots
+        const ticketsDataset = [
+            {
+                id: "65198",
+                ticketCode: "BCD#65198",
+                from: "COBRA/Sor...",
+                fullName: "Soraya Martinez",
+                email: "soraya.martinez@grupo-cobra.com",
+                company: "COBRA / BCD Travel",
+                position: "Travel Coordinator",
+                avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+                subject: "Re: Solicitud viaje Mario Hernandez (BCD#65198)",
+                folder: "100 COBRA",
+                se: "SP",
+                to: "AR",
+                date: "10:49",
+                status: "OPEN",
+                notes: "Cliente VIP Corporativo. Gestionar preferencia ventana.",
+                badges: [
+                    { name: "Otros [AI]", class: "badge-mody" }
+                ],
+                history: [
+                    {
+                        type: "email",
+                        sender: "Soraya Martinez",
+                        date: "Today 10:49",
+                        ticketId: "BCD#65198",
+                        text: "Buenos días, adjunto la solicitud de reserva para el viaje de Mario Hernández con destino a la sede corporativa de Sevilla."
+                    }
+                ]
+            },
+            {
+                id: "65188",
+                ticketCode: "BCD#65188",
+                from: "COBRA/Sor...",
+                fullName: "Soraya Martinez",
+                email: "soraya.martinez@grupo-cobra.com",
+                company: "COBRA",
+                position: "Travel Manager",
+                avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
+                subject: "Re: Solicitud viaje Miguel Angel Perez Garcia (BCD#65188)",
+                folder: "100 COBRA",
+                se: "SP",
+                to: "AR",
+                date: "10:43",
+                status: "OPEN",
+                notes: "Reclamación abierta en la aerolínea.",
+                badges: [
+                    { name: "Reclamación [AI]", class: "badge-mody" }
+                ],
+                history: [
+                    {
+                        type: "email",
+                        sender: "Soraya Martinez",
+                        date: "Today 10:43",
+                        ticketId: "BCD#65188",
+                        text: "Solicitamos el seguimiento de la reclamación por equipaje extraviado del pasajero Miguel Ángel Pérez García."
+                    }
+                ]
+            },
+            {
+                id: "65161",
+                ticketCode: "BCD#65161",
+                from: "COBRA/Yei...",
+                fullName: "Yeiza Cano",
+                email: "yeiza.cano@grupo-cobra.com",
+                company: "COBRA",
+                position: "Operations Assistant",
+                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+                subject: "Re: hotel Almería 12 y 13 de noviembre (BCD#65161)",
+                folder: "100 COBRA",
+                se: "YC",
+                to: "IA",
+                date: "10:33",
+                status: "OPEN",
+                notes: "Reserva de 2 noches confirmada con desayuno.",
+                badges: [
+                    { name: "Reserva: Consulta [AI]", class: "badge-ai" }
+                ],
+                history: [
+                    {
+                        type: "email",
+                        sender: "Yeiza Cano",
+                        date: "Today 10:33",
+                        ticketId: "BCD#65161",
+                        text: "Por favor confirmar la reserva en hotel de Almería para los días 12 y 13 de noviembre para la delegación técnica."
+                    }
+                ]
+            },
+            {
+                id: "88211",
+                ticketCode: "IRYO#992",
+                from: "Epifanio Mo...",
+                fullName: "Epifanio Moreno",
+                email: "epifanio.moreno@empresas.es",
+                company: "Iberia Logistics",
+                position: "Director de Operaciones",
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+                subject: "ACCIDENTE DE TREN AVE/IRYO",
+                folder: "100 COBRA",
+                se: "",
+                to: "",
+                date: "10:21",
+                status: "OPEN",
+                notes: "Urgencia máxima. Reubicar en siguiente trayecto.",
+                badges: [
+                    { name: "Prioritario", class: "badge-prio" }
+                ],
+                history: [
+                    {
+                        type: "email",
+                        sender: "Epifanio Moreno",
+                        date: "Today 10:21",
+                        ticketId: "IRYO#992",
+                        text: "URGENTE: Debido a la incidencia y parada del tren AVE/IRYO solicitamos cambio inmediato o transporte alternativo."
+                    }
+                ]
+            },
+            {
+                id: "77123",
+                ticketCode: "CB#3321",
+                from: "Arancha Re...",
+                fullName: "Arancha Real",
+                email: "arancha.real@tendam.es",
+                company: "Grupo Tendam",
+                position: "HR Manager",
+                avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80",
+                subject: "Cancelaciones Manuel Florencio Perza",
+                folder: "100 COBRA",
+                se: "CB",
+                to: "",
+                date: "10:19",
+                status: "OPEN",
+                notes: "Cancelación sin penalización por política tarifaria Flex.",
+                badges: [
+                    { name: "Otros [AI]", class: "badge-mody" },
+                    { name: "Prioritario", class: "badge-prio" }
+                ],
+                history: [
+                    {
+                        type: "email",
+                        sender: "Arancha Real",
+                        date: "Today 10:19",
+                        ticketId: "CB#3321",
+                        text: "Solicito proceder con la cancelación completa del billete de Manuel Florencio Perza por cambios en la agenda de dirección."
+                    }
+                ]
+            },
+            {
+                id: "65120",
+                ticketCode: "BCD#65120",
+                from: "COBRA/Sor...",
+                fullName: "Soraya Martinez",
+                email: "soraya.martinez@grupo-cobra.com",
+                company: "COBRA",
+                position: "Travel Coordinator",
+                avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+                subject: "RE: Severiano Garcia, Dalia 19 Diciembre-2...",
+                folder: "100 COBRA",
+                se: "SP",
+                to: "AR",
+                date: "10:18",
+                status: "OPEN",
+                notes: "Billete de avión emitido correctamente.",
+                badges: [
+                    { name: "Reserva: Emisión [AI]", class: "badge-ai" },
+                    { name: "Prioritario", class: "badge-prio" }
+                ],
+                history: [
+                    {
+                        type: "email",
+                        sender: "Soraya Martinez",
+                        date: "Today 10:18",
+                        ticketId: "BCD#65120",
+                        text: "Por favor emitan la reserva de billete de avión para Severiano García con salida el 19 de Diciembre."
+                    }
+                ]
+            },
+            {
+                id: "88412",
+                ticketCode: "CB#1002",
+                from: "ADRIANA P...",
+                fullName: "Adriana Perez",
+                email: "adriana.perez@saeta.es",
+                company: "Grupo Saeta",
+                position: "Ejecutiva de Cuentas",
+                avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
+                subject: "RE: Hotel Inicio - ADRIANA PEREZ (ABR...",
+                folder: "100 COBRA",
+                se: "CB",
+                to: "",
+                date: "10:10",
+                status: "OPEN",
+                notes: "Factura enviada a contabilidad.",
+                badges: [
+                    { name: "Administración [AI]", class: "badge-ai" },
+                    { name: "Prioritario", class: "badge-prio" }
+                ],
+                history: [
+                    {
+                        type: "email",
+                        sender: "Adriana Perez",
+                        date: "Today 10:10",
+                        ticketId: "CB#1002",
+                        text: "Adjunto el comprobante de liquidación del Hotel Inicio correspondiente a la estancia de esta semana."
+                    }
+                ]
+            },
+            {
+                id: "99012",
+                ticketCode: "CB+#441",
+                from: "Itziar Elorrie...",
+                fullName: "Itziar Elorrieta",
+                email: "itziar.elorrieta@fecyt.es",
+                company: "FECYT",
+                position: "Coordinadora de Viajes",
+                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+                subject: "RE: Solicitud de Vuelo_esposa Octavio...",
+                folder: "100 COBRA",
+                se: "CB+",
+                to: "",
+                date: "10:07",
+                status: "OPEN",
+                notes: "Vuelo internacional en clase Business.",
+                badges: [
+                    { name: "Reserva: Emisión [AI]", class: "badge-ai" },
+                    { name: "Prioritario", class: "badge-prio" }
+                ],
+                history: [
+                    {
+                        type: "email",
+                        sender: "Itziar Elorrieta",
+                        date: "Today 10:07",
+                        ticketId: "CB+#441",
+                        text: "Confirmo la emisión del vuelo para el acompañante de Octavio según las condiciones corporativas."
+                    }
+                ]
+            }
+        ];
+
+        let selectedTicketIndex = 0;
+        let currentStatusFilter = 'ALL';
+        let currentFolderFilter = '100 COBRA';
+        let currentActiveChannel = 'email';
+
+        // Initialize App
+        window.onload = function() {
+            renderTicketTable();
+            loadTicketDetails(0);
+        };
+
+        // Render Table Rows
+        function renderTicketTable() {
+            const tbody = document.getElementById('ticketTableBody');
+            tbody.innerHTML = '';
+
+            let filtered = ticketsDataset.filter(t => {
+                const matchFolder = currentFolderFilter === 'ALL' || t.folder.includes(currentFolderFilter) || currentFolderFilter === 'Home';
+                const matchStatus = currentStatusFilter === 'ALL' || t.status === currentStatusFilter;
+                return matchFolder && matchStatus;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<div class="p-8 text-center text-slate-400">No hay tickets en esta carpeta o filtro.</div>`;
+                document.getElementById('ticketCountLabel').innerText = `Showing 0 tickets`;
+                return;
+            }
+
+            filtered.forEach((t, idx) => {
+                const isSelected = idx === selectedTicketIndex;
+
+                let badgesHtml = t.badges.map(b => `<span class="${b.class}">${b.name}</span>`).join(' ');
+
+                const row = document.createElement('div');
+                row.className = `ticket-row px-2 py-1.5 cursor-pointer flex items-center border-b border-slate-100 text-xs ${isSelected ? 'selected' : ''}`;
+                row.onclick = () => selectTicket(idx);
+
+                row.innerHTML = `
+                    <div class="w-10 text-center flex items-center space-x-1">
+                        <i class="fa-solid fa-chevron-right text-[8px] text-slate-400"></i>
+                        <span class="w-5 h-5 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-[9px]">
+                            ${t.fullName.charAt(0)}
+                        </span>
+                    </div>
+                    <div class="w-28 truncate font-semibold text-slate-800 pl-1">
+                        ${t.from}
+                    </div>
+                    <div class="flex-1 truncate px-1">
+                        <div class="flex items-center space-x-1 mb-0.5">
+                            ${badgesHtml}
+                        </div>
+                        <div class="text-slate-700 font-medium truncate">${t.subject}</div>
+                    </div>
+                    <div class="w-8 text-center text-slate-500 font-semibold text-[10px]">${t.se}</div>
+                    <div class="w-8 text-center text-slate-500 font-semibold text-[10px]">${t.to}</div>
+                    <div class="w-12 text-right font-semibold text-slate-600 text-[10px]">${t.date}</div>
+                `;
+
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('ticketCountLabel').innerText = `Showing ${filtered.length} tickets`;
+        }
+
+        // Select Ticket
+        function selectTicket(index) {
+            selectedTicketIndex = index;
+            renderTicketTable();
+            loadTicketDetails(index);
+        }
+
+        // Load 360 Customer Details in Right Pane
+        function loadTicketDetails(index) {
+            const ticket = ticketsDataset[index];
+            
+            if(!ticket) {
+                document.getElementById('noSelectionView').classList.remove('hidden');
+                document.getElementById('activeTicketView').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('noSelectionView').classList.add('hidden');
+            document.getElementById('activeTicketView').classList.remove('hidden');
+
+            document.getElementById('detailChannelAddress').innerText = ticket.email;
+            document.getElementById('detailAvatar').src = ticket.avatar;
+            document.getElementById('detailFullName').innerText = ticket.fullName;
+            document.getElementById('detailFullNameSub').innerText = ticket.fullName;
+            document.getElementById('detailCompany').innerText = ticket.company;
+            document.getElementById('detailPosition').innerText = ticket.position;
+            document.getElementById('detailNotesInput').value = ticket.notes;
+
+            renderInteractionLogs();
+        }
+
+        // Render History Logs
+        function renderInteractionLogs() {
+            const ticket = ticketsDataset[selectedTicketIndex];
+            const logContainer = document.getElementById('interactionHistoryLog');
+            logContainer.innerHTML = '';
+
+            const logs = ticket.history.filter(h => h.type === currentActiveChannel);
+
+            if (logs.length === 0) {
+                logContainer.innerHTML = `
+                    <div class="p-8 text-center text-slate-400">
+                        <i class="fa-regular fa-comment-dots text-2xl mb-1"></i>
+                        <p>No hay mensajes registrados en ${currentActiveChannel.toUpperCase()}.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            logs.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-3 rounded border border-slate-200 shadow-sm space-y-2";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-1.5">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-regular fa-envelope text-[#0e71ce]"></i>
+                            <span class="font-bold text-slate-800">${item.sender}</span>
+                            <span class="text-slate-400 text-[10px]">${item.ticketId}</span>
+                        </div>
+                        <span class="text-slate-400 text-[10px]">${item.date}</span>
+                    </div>
+                    <p class="text-slate-700 leading-relaxed text-xs">${item.text}</p>
+                `;
+                logContainer.appendChild(card);
+            });
+        }
+
+        // Folder Switching
+        function selectFolder(folderName, code) {
+            currentFolderFilter = folderName;
+            document.getElementById('folderTitleLabel').innerHTML = `Folder: <b>${folderName}</b>`;
+            
+            // Remove active style from previous folders
+            document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('active'));
+            
+            selectedTicketIndex = 0;
+            renderTicketTable();
+            loadTicketDetails(0);
+        }
+
+        // Status Filtering
+        function filterStatus(status) {
+            currentStatusFilter = status;
+            ['btn-open', 'btn-onhold', 'btn-closed', 'btn-all'].forEach(id => {
+                const btn = document.getElementById(id);
+                btn.className = "px-2 py-0.5 hover:bg-slate-200 rounded text-slate-600 flex items-center space-x-1";
+            });
+
+            if(status === 'OPEN') document.getElementById('btn-open').className = "px-2 py-0.5 bg-white border border-slate-300 rounded text-slate-800 shadow-sm flex items-center space-x-1 font-bold";
+            if(status === 'ON HOLD') document.getElementById('btn-onhold').className = "px-2 py-0.5 bg-white border border-slate-300 rounded text-slate-800 shadow-sm flex items-center space-x-1 font-bold";
+            if(status === 'CLOSED') document.getElementById('btn-closed').className = "px-2 py-0.5 bg-white border border-slate-300 rounded text-slate-800 shadow-sm flex items-center space-x-1 font-bold";
+            if(status === 'ALL') document.getElementById('btn-all').className = "px-2 py-0.5 border border-slate-300 bg-slate-200 rounded text-slate-800 flex items-center space-x-1 font-bold";
+
+            selectedTicketIndex = 0;
+            renderTicketTable();
+            loadTicketDetails(0);
+        }
+
+        // Switch Channel Tabs
+        function switchChannel(channel) {
+            currentActiveChannel = channel;
+            
+            ['email', 'whatsapp', 'chat'].forEach(ch => {
+                const btn = document.getElementById(`tab-btn-${ch}`);
+                if(ch === channel) {
+                    btn.className = "px-3 py-1.5 font-bold text-xs border-b-2 border-[#0e71ce] text-[#0e71ce] bg-white flex items-center space-x-1";
+                } else {
+                    btn.className = "px-3 py-1.5 font-medium text-xs text-slate-600 hover:text-slate-900 flex items-center space-x-1";
+                }
+            });
+
+            renderInteractionLogs();
+        }
+
+        // Save Notes
+        function saveNotes() {
+            const val = document.getElementById('detailNotesInput').value;
+            ticketsDataset[selectedTicketIndex].notes = val;
+            alert("Nota guardada correctamente para el caso " + ticketsDataset[selectedTicketIndex].ticketCode);
+        }
+
+        // Inline Reply
+        function sendInlineReply() {
+            const txt = document.getElementById('inlineReplyText').value;
+            if(!txt.trim()) return;
+
+            const ticket = ticketsDataset[selectedTicketIndex];
+            ticket.history.push({
+                type: currentActiveChannel,
+                sender: "ADMIN1 (Agente)",
+                date: "Ahora mismo",
+                ticketId: ticket.ticketCode,
+                text: txt
+            });
+
+            document.getElementById('inlineReplyText').value = '';
+            renderInteractionLogs();
+        }
+
+        // Use AI Assist in Inline Reply
+        function useAiAssistInReply() {
+            document.getElementById('inlineReplyText').value = "Estimado cliente, hemos procesado su solicitud de acuerdo con la normativa del servicio. Adjuntamos la confirmación actualizada.";
+        }
+
+        // Modal Composer Control
+        function openComposerModal(mode) {
+            const ticket = ticketsDataset[selectedTicketIndex];
+            document.getElementById('composerTitle').innerText = `${mode} - FocalScope Omnichannel`;
+            if(ticket) {
+                document.getElementById('composerTo').value = ticket.email;
+                document.getElementById('composerSubject').value = `RE: ${ticket.subject}`;
+            }
+            document.getElementById('composerModal').classList.remove('hidden');
+        }
+
+        function closeComposerModal() {
+            document.getElementById('composerModal').classList.add('hidden');
+        }
+
+        function applyPredefinedTemplate(key) {
+            const body = document.getElementById('composerBody');
+            const templates = {
+                conf_vuelo: "Estimado cliente,\n\nLe confirmamos que la modificación de su billete de avión ha sido tramitada correctamente. Adjuntamos los nuevos bonos de embarque.\n\nAtentamente,\nEquipo de Gestión de Viajes",
+                hotel_almeria: "Estimado cliente,\n\nSu reserva de hotel en Almería para los días indicados ha sido confirmada con desayuno incluido.\n\nUn cordial saludo.",
+                incidencia_ave: "Estimado cliente,\n\nHemos tomado nota de la incidencia en su trayecto AVE/IRYO. Nuestro departamento de operaciones se encuentra reubicando su billete.\n\nAtentamente,\nAtención al Cliente 24h",
+                presupuesto: "Estimado cliente,\n\nAdjunto le remitimos la cotización detallada según la política de viajes corporativa de su empresa.\n\nQuedamos a su disposición."
+            };
+            if(templates[key]) {
+                body.value = templates[key];
+            }
+        }
+
+        function generateAiDraft() {
+            document.getElementById('composerBody').value = "Hola, he revisado los detalles de su expediente en el sistema. Todo se encuentra verificado conforme a la política corporativa de viajes. Procedemos a la emisión inmediata.";
+        }
+
+        function sendComposerMessage() {
+            const txt = document.getElementById('composerBody').value;
+            if(!txt.trim()) return;
+
+            const ticket = ticketsDataset[selectedTicketIndex];
+            if(ticket) {
+                ticket.history.push({
+                    type: "email",
+                    sender: "ADMIN1 (Agente)",
+                    date: "Ahora mismo",
+                    ticketId: ticket.ticketCode,
+                    text: txt
+                });
+            }
+            closeComposerModal();
+            renderInteractionLogs();
+        }
+
+        // Call Recording Modal Control
+        function openCallRecordingModal() {
+            document.getElementById('callRecordingModal').classList.remove('hidden');
+        }
+
+        function closeCallRecordingModal() {
+            document.getElementById('callRecordingModal').classList.add('hidden');
+        }
+
+        let isPlayingAudio = false;
+        function toggleAudio() {
+            isPlayingAudio = !isPlayingAudio;
+            const icon = document.getElementById('audioPlayIcon');
+            if(isPlayingAudio) {
+                icon.className = "fa-solid fa-pause";
+            } else {
+                icon.className = "fa-solid fa-play";
+            }
+        }
+
+        // Toolbar Quick Actions
+        function closeCurrentTicket() {
+            ticketsDataset[selectedTicketIndex].status = "CLOSED";
+            filterStatus('CLOSED');
+        }
+
+        function assignToMe() {
+            alert(`Ticket ${ticketsDataset[selectedTicketIndex].ticketCode} asignado a ADMIN1`);
+        }
+
+        function refreshList() {
+            renderTicketTable();
+        }
+
+        function filterFolderSearch() {
+            const query = document.getElementById('folderSearchInput').value.toLowerCase();
+            const filtered = ticketsDataset.filter(t => t.subject.toLowerCase().includes(query) || t.from.toLowerCase().includes(query));
+            renderTicketTableWithData(filtered);
+        }
+
+        function filterGlobalSearch() {
+            const query = document.getElementById('quickFindInput').value.toLowerCase();
+            const filtered = ticketsDataset.filter(t => t.email.toLowerCase().includes(query) || t.subject.toLowerCase().includes(query));
+            renderTicketTableWithData(filtered);
+        }
+
+        function renderTicketTableWithData(list) {
+            const tbody = document.getElementById('ticketTableBody');
+            tbody.innerHTML = '';
+            list.forEach((t, idx) => {
+                const row = document.createElement('div');
+                row.className = `ticket-row px-2 py-1.5 cursor-pointer flex items-center border-b border-slate-100 text-xs`;
+                row.onclick = () => selectTicket(idx);
+                row.innerHTML = `
+                    <div class="w-10 text-center flex items-center space-x-1">
+                        <span class="w-5 h-5 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-[9px]">
+                            ${t.fullName.charAt(0)}
+                        </span>
+                    </div>
+                    <div class="w-28 truncate font-semibold text-slate-800 pl-1">${t.from}</div>
+                    <div class="flex-1 truncate px-1"><div class="text-slate-700 font-medium truncate">${t.subject}</div></div>
+                    <div class="w-12 text-right font-semibold text-slate-600 text-[10px]">${t.date}</div>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>
